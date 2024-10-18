@@ -260,20 +260,27 @@ class outlineWriter():
         return prompt
     
     def extract_title_sections_descriptions(self, outline):
+        print("outline")
+        print(outline)
+        print("outline ends")
         title = outline.split('Title: ')[1].split('\n')[0]
         sections, descriptions = [], []
         for i in range(100):
             if f'Section {i+1}' in outline:
+                print(f'Section {i+1}: ')
                 sections.append(outline.split(f'Section {i+1}: ')[1].split('\n')[0])
                 descriptions.append(outline.split(f'Description {i+1}: ')[1].split('\n')[0])
         return title, sections, descriptions
     
     def extract_subsections_subdescriptions(self, outline):
         subsections, subdescriptions = [], []
+        print(outline)
         for i in range(100):
             if f'Subsection {i+1}' in outline:
+                print(f'Subsection {i+1}: ')
+
                 subsections.append(outline.split(f'Subsection {i+1}: ')[1].split('\n')[0])
-                subdescriptions.append(outline.split(f'Description {i+1}: ')[1].split('\n')[0])
+                subdescriptions.append(outline.split(f'Subsection {i+1}: ')[1].split('\n')[0])
         return subsections, subdescriptions
     
     def chunking(self, papers, titles, chunk_size = 14000):

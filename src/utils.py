@@ -8,20 +8,27 @@ import requests
 import random
 import json
 from langchain.document_loaders import PyPDFLoader
+# Load model directly
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+tokenizer = AutoTokenizer.from_pretrained("TroyDoesAI/Llama-3.1-8B-Instruct")
 
 class tokenCounter():
 
     def __init__(self) -> None:
-        self.encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
+        self.encoding = tokenizer
         self.model_price = {}
         
     def num_tokens_from_string(self, string:str) -> int:
+        if string is None:
+            return 0
         return len(self.encoding.encode(string))
 
     def num_tokens_from_list_string(self, list_of_string:List[str]) -> int:
         num = 0
         for s in list_of_string:
-            num += len(self.encoding.encode(s))
+            if s is not None:
+                num += len(self.encoding.encode(s))
         return num
     
     def compute_price(self, input_tokens, output_tokens, model):
@@ -34,6 +41,6 @@ class tokenCounter():
 def load_pdf(file, max_len = 1000):
     loader = PyPDFLoader(file)
     pages = loader.load_and_split()
-    encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
+    encoding = tokenizer
     text = ''.join([p.page_content for p in pages])
     return encoding.decode(encoding.encode(text)[:max_len])

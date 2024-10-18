@@ -3,7 +3,7 @@ import requests
 import json
 from tqdm import tqdm
 import threading
-
+import ollama
 class APIModel:
 
     def __init__(self, model, api_key, api_url) -> None:
@@ -13,26 +13,24 @@ class APIModel:
         
     def __req(self, text, temperature, max_try = 5):
         url = f"{self.__api_url}"
-        pay_load_dict = {"model": f"{self.model}","messages": [{
+        message = {
                 "role": "user",
-                "temperature":temperature,
-                "content": f"{text}"}]}
-        payload = json.dumps(pay_load_dict)
-        headers = {
-        'Accept': 'application/json',
-        'Authorization': f'Bearer {self.__api_key}',
-        'User-Agent': 'Apifox/1.0.0 (https://apifox.com)',
-        'Content-Type': 'application/json'
-        }
+                "content": f"{text}"}
         try:
-            response = requests.request("POST", url, headers=headers, data=payload)
-            return json.loads(response.text)['choices'][0]['message']['content']
-        except:
+            response = ollama.chat(model='llama3instruct', messages=[message])
+            print(response)
+            return response['message']['content']
+        except Exception as e:
+            print("Error")
+            print(e)
             for _ in range(max_try):
                 try:
-                    response = requests.request("POST", url, headers=headers, data=payload)
-                    return json.loads(response.text)['choices'][0]['message']['content']
-                except:
+                    response = ollama.chat(model='llama3instruct', messages=[message])
+                    print(response)
+                    return response['message']['content']
+                except Exception as e:
+                    print("Error")
+                    print(e)
                     pass
                 time.sleep(0.2)
             return None
